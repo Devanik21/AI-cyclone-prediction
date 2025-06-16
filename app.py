@@ -17,10 +17,18 @@ View and compare AI-based cyclone forecasts in real-time using Google's **Weathe
 """)
 
 # Weather Lab preview
-st.header("🌍 Live Cyclone Predictions")
-st.markdown("[🔗 Open Weather Lab](https://goo.gle/4l9hsiJ) – Real-time AI forecasts by Google")
+# Weather Lab Info
+st.header("🌍 Live Cyclone Predictions – Google Weather Lab")
+st.markdown("""
+Google’s **Weather Lab** showcases AI cyclone predictions vs traditional models.  
+Click below to open the live dashboard ⬇️
+""")
 
-st.components.v1.iframe("https://weather.google/intl/en/weather-lab/", height=700)
+st.link_button("🔗 Open Weather Lab", "https://goo.gle/4l9hsiJ")
+
+# Optional preview image
+st.image("https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Weather-Lab-Launch-Screenshot-1.max-1000x1000.png", caption="Preview of Google Weather Lab", use_column_width=True)
+
 
 # Gemini interaction
 if api_key:
