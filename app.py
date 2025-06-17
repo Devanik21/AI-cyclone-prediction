@@ -3,12 +3,13 @@ import requests
 import json
 from PIL import Image
 
-# Sidebar — Gemini API Key input
-st.sidebar.title("🔐 Gemini API Key")
-api_key = st.sidebar.text_input("Enter your Gemini API Key:", type="password")
+# --- Sidebar ---
+st.sidebar.title("🔐 API Keys")
+gemini_api_key = st.sidebar.text_input("Enter your Gemini API Key:", type="password")
+owm_api_key = st.sidebar.text_input("Enter your OpenWeatherMap API Key:", type="password") # Added OWM key input
 
 # App title
-st.title("🌀 Cyclone Prediction Viewer – Powered by AI + Google Weather Lab")
+st.title("🌀 Cyclone & Weather Viewer – Powered by AI + Google Weather Lab") # Updated title slightly
 st.markdown("""
 Welcome to your interactive cyclone dashboard 🌧️  
 View and compare AI-based cyclone forecasts in real-time using Google's Weather Lab.
@@ -40,14 +41,61 @@ st.image(
     use_container_width=True
 )
 
-# AI Assistant section
-if api_key:
-    st.header("🤖 AI Assistant – Gemini")
-    user_prompt = st.text_area("Ask Gemini about cyclone risks, patterns, or predictions:")
+# --- Current Weather Section (Added) ---
+st.header("☁️ Current Location Weather")
+st.markdown("Get current weather data for any city.")
 
-    if st.button("🔍 Get Insight from Gemini"):
+location = st.text_input("Enter city name (e.g., London, Tokyo):")
+
+if st.button("🔍 Get Weather"):
+    if not owm_api_key:
+        st.warning("🔑 Please enter your OpenWeatherMap API key to get weather data.")
+    elif not location:
+        st.warning("📍 Please enter a location.")
+    else:
+        # OpenWeatherMap API endpoint for current weather
+        weather_url = f"http://api.openweathermap.org/data/2.5/weather?q={location}&appid={owm_api_key}&units=metric" # Using metric units
+
+        try:
+            weather_response = requests.get(weather_url, timeout=10)
+            if weather_response.ok:
+                weather_data = weather_response.json()
+                if weather_data and weather_data.get("cod") != "404": # Check for valid response and not city not found
+                    main_data = weather_data.get("main", {})
+                    weather_desc = weather_data.get("weather", [{}])[0].get("description", "N/A")
+                    temp = main_data.get("temp", "N/A")
+                    feels_like = main_data.get("feels_like", "N/A")
+                    humidity = main_data.get("humidity", "N/A")
+                    wind_speed = weather_data.get("wind", {}).get("speed", "N/A") # Wind speed in m/s with units=metric
+
+                    st.success(f"Current weather in {weather_data.get('name', location)}:")
+                    st.write(f"**Description:** {weather_desc.capitalize()}")
+                    st.write(f"**Temperature:** {temp}°C")
+                    st.write(f"**Feels like:** {feels_like}°C")
+                    st.write(f"**Humidity:** {humidity}%")
+                    st.write(f"**Wind Speed:** {wind_speed} m/s")
+
+                    # Optional: Display weather icon if available
+                    icon_code = weather_data.get("weather", [{}])[0].get("icon")
+                    if icon_code:
+                         icon_url = f"http://openweathermap.org/img/wn/{icon_code}@2x.png"
+                         st.image(icon_url, width=50)
+
+                else:
+                     st.error(f"❌ Location not found or invalid response.")
+
+            else:
+                st.error(f"❌ Failed to fetch weather data: {weather_response.status_code} {weather_response.text}")
+        except requests.exceptions.RequestException as e:
+            st.error(f"❌ Request error fetching weather: {e}")
+
+# AI Assistant section
+if gemini_api_key: # Use the updated variable name
+    st.header("🤖 AI Assistant – Gemini")
+    user_prompt = st.text_area("Ask Gemini about cyclone risks, patterns, or predictions:", key="gemini_prompt") # Added key to avoid potential conflicts
+    if st.button("🔍 Get Insight from Gemini", key="gemini_button"): # Added key
         headers = {
-            "Authorization": f"Bearer {api_key}",
+            "Authorization": f"Bearer {gemini_api_key}", # Use updated variable name
             "Content-Type": "application/json"
         }
         data = {
@@ -66,7 +114,8 @@ if api_key:
             if response.ok:
                 result = response.json()
                 # Adjust path based on actual Gemini API response:
-                ai_reply = result['candidates'][0]['content']['parts'][0]['text']
+                # Added checks for nested keys
+                ai_reply = result.get('candidates', [{}])[0].get('content', {}).get('parts', [{}])[0].get('text', 'Could not parse Gemini response.')
                 st.success("✨ Gemini's Response:")
                 st.markdown(ai_reply)
             else:
@@ -78,4 +127,4 @@ else:
 
 # Footer
 st.markdown("---")
-st.caption("Built with 💙 using Streamlit, Gemini, and Google Weather Lab")
+st.caption("Built with 💙 using Streamlit, Gemini, and OpenWeatherMap") # Updated footer
