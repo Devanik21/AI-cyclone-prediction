@@ -183,7 +183,7 @@ selected_example = st.selectbox(
     index=0,
     key="gemini_example_select"
 )
-
+kkkkkkkk
 user_prompt_value = selected_example if selected_example else ""
 user_prompt = st.text_area("Your question for Gemini:", value=user_prompt_value, key="gemini_prompt", height=120)
 
