@@ -78,4 +78,4 @@ else:
 
 # Footer
 st.markdown("---")
-st.caption("🚀 Built with 💙 by Prince using Streamlit, Gemini, and Google Weather Lab")
+st.caption("Built with 💙 using Streamlit, Gemini, and Google Weather Lab")
