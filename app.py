@@ -286,6 +286,11 @@ def get_processors():
 
 processor, cyclone_predictor = get_processors()
 
+# Initialize data variables globally to prevent NameError
+weather_data = {}
+risk_assessment = {}
+ensemble_forecast = {}
+
 # --- Main Application Tabs ---
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "🌍 Real-Time Analysis", 
