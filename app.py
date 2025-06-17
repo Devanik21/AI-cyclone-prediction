@@ -7,7 +7,7 @@ st.set_page_config(page_title="Cyclone & Weather Viewer", page_icon="🌀", layo
 
 # --- API Configuration ---
 WEATHERAPI_BASE_URL = "http://api.weatherapi.com/v1/current.json"
-GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent"
+GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
 
 # --- Sidebar ---
 st.sidebar.title("🔐 API Keys")
