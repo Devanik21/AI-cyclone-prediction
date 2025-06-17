@@ -1,3 +1,7 @@
 streamlit
 requests
-pillow
+pandas
+numpy
+plotly
+folium
+streamlit-folium
