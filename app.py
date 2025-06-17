@@ -110,7 +110,8 @@ def get_gemini_insight(prompt, api_key):
         return
 
     headers = {
-        "Authorization": f"Bearer {api_key}",
+        # Corrected header for Gemini API using API Key
+        "x-goog-api-key": api_key,
         "Content-Type": "application/json"
     }
     data = {
@@ -162,10 +163,32 @@ if st.button("🔍 Get Weather", key="get_weather_button"):
 
 # --- AI Assistant Section ---
 st.header("🤖 AI Assistant – Powered by Gemini")
-st.markdown("Ask Gemini about cyclone risks, weather patterns, or climate predictions.")
-user_prompt = st.text_area("Your question for Gemini:", key="gemini_prompt", height=100)
+st.markdown("""
+Ask Gemini about cyclone risks, weather patterns, climate predictions, or other related topics. 
+Select an example below or type your own question.
+""")
+
+example_questions = [
+    "What are the typical cyclone risks for coastal regions in Southeast Asia during monsoon season?",
+    "Explain the El Niño effect on global weather patterns.",
+    "Based on current trends, what are the long-term climate change predictions for the Arctic region?",
+    "How can AI be used to improve early warnings for hurricanes?",
+    "What are the main factors contributing to the intensity of a tropical cyclone?",
+    "Summarize recent research on ocean temperature rise and its impact on weather."
+]
+
+selected_example = st.selectbox(
+    "Select an example question (optional):",
+    options=[""] + example_questions,  # Add an empty option for custom input
+    index=0,
+    key="gemini_example_select"
+)
+
+user_prompt_value = selected_example if selected_example else ""
+user_prompt = st.text_area("Your question for Gemini:", value=user_prompt_value, key="gemini_prompt", height=120)
+
 if st.button("🔍 Get Insight from Gemini", key="gemini_button"):
-    get_gemini_insight(user_prompt, gemini_api_key)
+    get_gemini_insight(user_prompt.strip(), gemini_api_key) # Ensure we pass a stripped prompt
 
 # --- Footer ---
 st.markdown("---")
